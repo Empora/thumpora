@@ -40,12 +40,6 @@ class Storage(BaseStorage):
             name=self.context.config.RESULT_STORAGE_BUCKET
         )
 
-    def __get_async_s3_bucket(self):
-        return AsyncBucket(
-            connection= self.get_asyncS3connection(),
-            name=self.context.config.RESULT_STORAGE_BUCKET
-        )
-
     def get_asyncS3connection(self):
         conn = async_s3_connection
         if conn is None:
@@ -73,16 +67,15 @@ class Storage(BaseStorage):
         file_key.key = file_abspath
         return file_key
 
-    def get_async_key(self):
-        file_abspath = self.normalize_path(self.context.request.url)
-        file_key=AsyncKey(self.async_storage)
-        file_key.key = file_abspath
-        return file_key
+    def get_async_key(self, path):
+        bucket_name, object_name = path.split("/", 1)
+        connection = self.get_asyncS3connection()
+        bucket = AsyncBucket(connection, bucket_name)
+        return AsyncKey(bucket, object_name)
 
     def __init__(self, context):
         BaseStorage.__init__(self, context)
         self.storage = self.__get_s3_bucket()
-        self.async_storage = self.__get_async_s3_bucket()
 
     # Interface
     def put(self, bytes):
@@ -91,6 +84,20 @@ class Storage(BaseStorage):
                                           encrypt_key = self.context.config.get('S3_STORAGE_SSE', default=False),
                                           reduced_redundancy = self.context.config.get('S3_STORAGE_RRS', default=False)
                                           )
+
+
+
+    def put_crypto(self, path):
+        raise NotImplementedError()
+
+    def put_detector_data(self, path, data):
+        raise NotImplementedError()
+
+    @return_future
+    def get(self, callback):
+        file_abspath = self.normalize_path(self.context.request.url)
+        key = self.get_async_key(file_abspath)
+        key.read(callback=callback)
 
     @return_future
     def get(self, callback):
