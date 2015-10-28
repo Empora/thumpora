@@ -1,0 +1,5 @@
+setup.py
+thumpora.egg-info/PKG-INFO
+thumpora.egg-info/SOURCES.txt
+thumpora.egg-info/dependency_links.txt
+thumpora.egg-info/top_level.txt

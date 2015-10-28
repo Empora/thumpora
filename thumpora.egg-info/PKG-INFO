@@ -1,0 +1,14 @@
+Metadata-Version: 1.1
+Name: thumpora
+Version: 0.1
+Summary: thumbor async s3
+Home-page: https://github.com/Empora/thumpora.git
+Author: Empora
+Author-email: admin@empora.com
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires: dateutil
+Requires: thumbor
+Requires: boto
+Requires: botornado
