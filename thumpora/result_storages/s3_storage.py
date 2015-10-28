@@ -1,15 +1,15 @@
 import os
+import hashlib
+
 from botornado.s3.bucket import AsyncBucket
 from botornado.s3.key import AsyncKey
 from boto.s3.key import Key
 from dateutil.parser import parse as parse_ts
 from thumbor.result_storages import BaseStorage
 from boto.s3.bucket import Bucket
-
-import hashlib
-
 from tornado.concurrent import return_future
-from connection import getS3connection, get_asyncS3connection
+
+from thumpora.connection import getS3connection, get_asyncS3connection
 
 s3_connection = None
 async_s3_connection = None

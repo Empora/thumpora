@@ -1,8 +1,7 @@
 from botornado.s3.bucket import AsyncBucket
-from botornado.s3.connection import AsyncS3Connection
 from botornado.s3.key import AsyncKey
 from tornado.concurrent import return_future
-from connection import get_asyncS3connection
+from thumpora.connection import get_asyncS3connection
 
 
 @return_future
