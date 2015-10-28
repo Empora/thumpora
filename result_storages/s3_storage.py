@@ -1,15 +1,15 @@
 import os
 from botornado.s3.bucket import AsyncBucket
-from botornado.s3.connection import AsyncS3Connection
 from botornado.s3.key import AsyncKey
 from boto.s3.key import Key
 from dateutil.parser import parse as parse_ts
 from thumbor.result_storages import BaseStorage
 from boto.s3.bucket import Bucket
-from boto.s3.connection import S3Connection
+
 import hashlib
 
 from tornado.concurrent import return_future
+from connection import getS3connection, get_asyncS3connection
 
 s3_connection = None
 async_s3_connection = None
@@ -22,42 +22,17 @@ class Storage(BaseStorage):
 
     # Helper method
 
-    def getS3connection(self):
-        conn = s3_connection
-        if conn is None:
-            if self.context.config.get('AWS_ROLE_BASED_CONNECTION', default=False):
-                conn = S3Connection()
-            else:
-                conn = S3Connection(
-                    self.context.config.get('AWS_ACCESS_KEY'),
-                    self.context.config.get('AWS_SECRET_KEY')
-                )
-        return conn
-
     def __get_s3_bucket(self):
         return Bucket(
-            connection= self.getS3connection(),
+            connection= getS3connection(self.context),
             name=self.context.config.RESULT_STORAGE_BUCKET
         )
 
     def __get_async_s3_bucket(self):
         return AsyncBucket(
-            connection= self.get_asyncS3connection(),
+            connection= get_asyncS3connection(self.context),
             name=self.context.config.RESULT_STORAGE_BUCKET
         )
-
-    def get_asyncS3connection(self):
-        conn = async_s3_connection
-        if conn is None:
-            if self.context.config.get('AWS_ROLE_BASED_CONNECTION', default=False):
-                conn = AsyncS3Connection()
-            else:
-                conn = AsyncS3Connection(
-                    self.context.config.get('AWS_ACCESS_KEY'),
-                    self.context.config.get('AWS_SECRET_KEY')
-                )
-        return conn
-
 
     def normalize_path(self, path):
         root_path = self.context.config.get('RESULT_STORAGE_AWS_STORAGE_ROOT_PATH', default='thumbor/result_storage/')
