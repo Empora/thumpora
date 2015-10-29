@@ -1,5 +1,4 @@
-from botornado.s3.connection import AsyncS3Connection
-from boto.s3.connection import S3Connection
+from botornado.s3.connection import AsyncS3Connection, boto
 
 s3_connection = None
 async_s3_connection = None
@@ -20,9 +19,9 @@ def getS3connection(context):
     conn = s3_connection
     if conn is None:
         if context.config.get('AWS_ROLE_BASED_CONNECTION', default=False):
-            conn = S3Connection()
+            conn = boto.connect_s3()
         else:
-            conn = S3Connection(
+            conn = boto.connect_s3(
                 context.config.get('AWS_ACCESS_KEY'),
                 context.config.get('AWS_SECRET_KEY')
             )
