@@ -69,18 +69,17 @@ class Storage(BaseStorage):
 
     @return_future
     def get(self, callback):
-        file_abspath = self.normalize_path(self.context.request.url)
-        key = self.get_async_key(file_abspath)
+        key = self.get_async_key()
         key.read(callback=callback)
 
 
     @return_future
     def exists(self, path, callback):
-        key = self.get_key(path)
+        key = self.get_async_key()
         key.exists(callback = callback)
 
     def remove(self, path):
-        key = self.get_key(path)
+        key = self.get_key()
         key.delete()
 
     def last_updated(self):
