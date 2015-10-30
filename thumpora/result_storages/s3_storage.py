@@ -4,8 +4,11 @@ import hashlib
 from botornado.s3.bucket import AsyncBucket
 from botornado.s3.key import AsyncKey
 from boto.s3.key import Key
+import datetime
 from dateutil.parser import parse as parse_ts
-from thumbor.result_storages import BaseStorage
+from os.path import getmtime
+from thumbor.engines import BaseEngine
+from thumbor.result_storages import BaseStorage, ResultStorageResult
 from boto.s3.bucket import Bucket
 from tornado.concurrent import return_future
 
@@ -70,7 +73,23 @@ class Storage(BaseStorage):
     @return_future
     def get(self, callback):
         key = self.get_async_key()
-        key.read(callback=callback)
+        # def _read(bytes):
+        #     result = ResultStorageResult(
+        #         buffer=buffer,
+        #         metadata={
+        #             'LastModified':  None,
+        #             'ContentLength': len(buffer),
+        #             'ContentType':   BaseEngine.get_mimetype(buffer)
+        #         }
+        #     )
+        #     if callable(callback):
+        #         callback(result)
+        def _mycall(exists):
+            if (exists):
+                key.read(callback=callback)
+            else:
+                callback(None)
+        key.exists(callback = _mycall)
 
 
     @return_future
